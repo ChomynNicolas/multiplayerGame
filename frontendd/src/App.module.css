@@ -1,0 +1,42 @@
+.elementsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.colorContainer {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.colorDiv {
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+}
+
+.colorDiv:hover{
+  opacity: 0.7;
+  
+}
+
+.herramientContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.imgHerramienta {
+  width: 40px;
+  height: 40px;
+  border: 1px solid black;
+  cursor: pointer;
+}
+
+.imgHerramienta:hover {
+  background-color: rgba(0, 0, 0, 0.103);
+}
