@@ -8,20 +8,27 @@ import borrador from './assets/borrador.png'
 
 function App() {
   const [word, setword] = useState([]);
-  const [canvasContext, setCanvasContext] = useState(null);
+  
   const [dibujando, setDibujando] = useState(false)
   const [puntos, setPuntos] = useState([])
   const [color, setcolor] = useState("black")
-  const [cuadrado, setCuadrado] = useState(5)
   const canvasRef = useRef(null);
+  const contextRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
 
-    canvas.width = window.innerWidth * 0.5;
-    canvas.height = window.innerHeight * 0.5;
+    canvas.width =  window.innerWidth *0.5 ;
+    canvas.height = window.innerHeight *0.5;
+    
     const context = canvas.getContext("2d");
-    setCanvasContext(context);
+    
+    context.lineCap = "round"
+    context.strokeStyle = color
+    context.lineWidth = 5
+    contextRef.current = context
+
+    
   }, []);
 
   useEffect(() => {
@@ -31,27 +38,33 @@ function App() {
       setword(wordFilter);
     });
 
+
     return () => {
       socket.off("server:getword");
     };
   }, []);
 
+  const handleSelectColor = (e) =>{
+    contextRef.current.strokeStyle = e.target.style.backgroundColor
+  }
+
+
+
+
+
   const handleMove = () => {
     socket.emit("client:getword");
   };
   
-  const evtDibujaCanvas = (e) =>{
+  const evtDibujaCanvas = (evt) =>{
 
     if(!dibujando) return
-    const canvas = canvasRef.current
+    const offsetX = evt.clientX - 480;
+    const offsetY = evt.clientY - 67;
+    contextRef.current.lineTo(offsetX,offsetY);
+    contextRef.current.stroke();
     
-    const mouseX = e.clientX - canvas.getBoundingClientRect().left;
-    const mouseY = e.clientY - canvas.getBoundingClientRect().top;
-    
-    canvasContext.fillStyle = color;
-    canvasContext.fillRect(mouseX,mouseY,cuadrado,cuadrado);
-    
-    setPuntos([...puntos,{x: mouseX, y: mouseY}])
+    setPuntos([...puntos,{x: offsetX, y: offsetY}])
     
 
 
@@ -59,22 +72,25 @@ function App() {
   }
 
   const evtIniciaDibujo = (evt)=>{
+    const offsetX = evt.clientX - 480;
+    const offsetY = evt.clientY - 67;
+    contextRef.current.beginPath();
+    contextRef.current.moveTo(offsetX,offsetY);
     setDibujando(true)
-    evtDibujaCanvas(evt)
   }
 
-  const evtTerminaDibujo = (evt) =>{
+  const evtTerminaDibujo = () =>{
+    contextRef.current.closePath();
     setDibujando(false)
-    evtDibujaCanvas(evt)
     console.log(puntos)
-    if(cuadrado===50){
-      setCuadrado(5)
+    if(contextRef.current.lineWidth===50){
+      contextRef.current.lineWidth = 5
     }
   }
   
   const handleBorrador = ()=>{
-    setCuadrado(50)
-    setcolor("white")
+    contextRef.current.lineWidth = 50
+    contextRef.current.strokeStyle = "white"
   }
 
   
@@ -89,25 +105,26 @@ function App() {
         </div>
         <div>
           <ul className={styles.colorContainer}>
-            <li onClick={(e)=> setcolor(e.target.style.backgroundColor)}><div style={{backgroundColor: "black"}} className={styles.colorDiv}></div></li>
-            <li onClick={(e)=> setcolor(e.target.style.backgroundColor)}><div style={{backgroundColor: "red"}} className={styles.colorDiv}></div></li>
-            <li onClick={(e)=> setcolor(e.target.style.backgroundColor)}><div style={{backgroundColor: "blue"}} className={styles.colorDiv}></div></li>
-            <li onClick={(e)=> setcolor(e.target.style.backgroundColor)}><div style={{backgroundColor: "green"}} className={styles.colorDiv}></div></li>
-            <li onClick={(e)=> setcolor(e.target.style.backgroundColor)}><div style={{backgroundColor: "yellow"}} className={styles.colorDiv}></div></li>
-            <li onClick={(e)=> setcolor(e.target.style.backgroundColor)}><div style={{backgroundColor: "cyan"}} className={styles.colorDiv}></div></li>
-            <li onClick={(e)=> setcolor(e.target.style.backgroundColor)}><div style={{backgroundColor: "brown"}} className={styles.colorDiv}></div></li>
-            <li onClick={(e)=> setcolor(e.target.style.backgroundColor)}><div style={{backgroundColor: "pink"}} className={styles.colorDiv}></div></li>
+            <li onClick={handleSelectColor}><div style={{backgroundColor: "black"}} className={styles.colorDiv}></div></li>
+            <li onClick={handleSelectColor}><div style={{backgroundColor: "red"}} className={styles.colorDiv}></div></li>
+            <li onClick={handleSelectColor}><div style={{backgroundColor: "blue"}} className={styles.colorDiv}></div></li>
+            <li onClick={handleSelectColor}><div style={{backgroundColor: "green"}} className={styles.colorDiv}></div></li>
+            <li onClick={handleSelectColor}><div style={{backgroundColor: "yellow"}} className={styles.colorDiv}></div></li>
+            <li onClick={handleSelectColor}><div style={{backgroundColor: "cyan"}} className={styles.colorDiv}></div></li>
+            <li onClick={handleSelectColor}><div style={{backgroundColor: "brown"}} className={styles.colorDiv}></div></li>
+            <li onClick={handleSelectColor}><div style={{backgroundColor: "pink"}} className={styles.colorDiv}></div></li>
           </ul>
         </div>
       </div>
 
       <div>
-        <div>
+        <div className={styles.canvasContainer}>
           <canvas ref={canvasRef}
                   style={{border: "1px solid black"}}
                   onMouseDown={evtIniciaDibujo}
                   onMouseMove={evtDibujaCanvas}
                   onMouseUp={evtTerminaDibujo}
+                  className={styles.canvaStyle}
                   
                   ></canvas>
         </div>

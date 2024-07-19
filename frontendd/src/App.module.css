@@ -40,3 +40,12 @@
 .imgHerramienta:hover {
   background-color: rgba(0, 0, 0, 0.103);
 }
+
+.canvasContainer{
+  display: flex;
+  align-items: center;
+}
+
+.canvaStyle{
+  margin: 0 auto;
+}
