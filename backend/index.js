@@ -3,7 +3,7 @@ const http = require("http");
 const socketIo = require("socket.io");
 const randomWord = require("./assets/randomWord.json");
 
-const User = require("./models/user.model");
+
 
 const app = express();
 const server = http.createServer(app);
@@ -14,7 +14,7 @@ const io = socketIo(server, {
   },
 });
 
-require("./config/mongoDb.config");
+
 
 const connectedSockets = new Map();
 
