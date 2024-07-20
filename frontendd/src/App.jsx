@@ -7,7 +7,8 @@ import Controles from "./components/Controles/Controles";
 import Canvas from "./components/Canvas/Canvas";
 import Modal from "./components/Modal/Modal";
 import Chat from "./components/Chat/Chat";
-
+import OtroModal from "./components/OtroModal/OtroModal";
+import ModalGanador from "./components/ModalGanador/ModalGanador";
 
 const socket = io("http://localhost:4000");
 
@@ -24,29 +25,40 @@ function App() {
   const [winner, setWinner] = useState("");
   const [gameFinish, setGameFinish] = useState(false);
   const [palabraAdiv, setPalabraAdiv] = useState("");
-  const [poderDibujar, setPoderDibujar] = useState(false)
+  const [poderDibujar, setPoderDibujar] = useState(false);
   const [Rondas, setRondas] = useState(5);
+  const [otroModal, setOtroModal] = useState(false);
+  const [palabraModal, setPalabraModal] = useState("");
+  const [palabraModalJugador, setPalabraModalJugador] = useState("");
 
   useEffect(() => {
     socket.on("server:getword", (palabra) => {
       setWord(palabra);
-      setPoderDibujar(true)
+      setPoderDibujar(true);
+      setOtroModal(true);
+      setPalabraModalJugador(
+        "Tienes la palabra, haz tu mejor intento de dibujo"
+      );
     });
 
-    socket.on('server:palabrasecreta', (palabra) => {
+    socket.on("server:palabrasecreta", (palabra) => {
       setPalabraAdiv(palabra);
       setLoadingPalabra(true);
+      setOtroModal(true);
+      setPalabraModal(
+        "Alguien tiene la palabra, intenta adivinar con el dibujo"
+      );
     });
 
     return () => {
       socket.off("server:getword");
-      socket.off('server:palabrasecreta');
+      socket.off("server:palabrasecreta");
     };
   }, [socket]);
 
   const handleSelectColor = (e) => {
-    if(!poderDibujar){
-      return
+    if (!poderDibujar) {
+      return;
     }
     const selectedColor = e.target.style.backgroundColor;
     setColor(selectedColor);
@@ -60,57 +72,76 @@ function App() {
   };
 
   const limpiarElLienzo = () => {
-    if(!poderDibujar){
-      return
+    if (!poderDibujar) {
+      return;
     }
     socket.emit("client:limpiar");
   };
 
   const handleSelectOptions = (options) => {
-    if(!poderDibujar){
-      return
+    if (!poderDibujar) {
+      return;
     }
     socket.emit("client:options", options);
   };
 
   return (
-    <div>
+    <div className={styles.container}>
       <div className={styles.elementsContainer}>
         <Herramientas handleSelectOptions={handleSelectOptions} />
         <Colores handleSelectColor={handleSelectColor} />
-        <Controles handleMove={handleMove} word={word} Rondas={Rondas} limpiarElLienzo={limpiarElLienzo} />
+        <Controles
+          handleMove={handleMove}
+          word={word}
+          Rondas={Rondas}
+          limpiarElLienzo={limpiarElLienzo}
+        />
       </div>
       <div className={styles.canvaAndButtonContainer}>
-        <Canvas 
-          dibujando={dibujando} 
-          setDibujando={setDibujando} 
-          puntos={puntos} 
-          setPuntos={setPuntos} 
-          socket={socket} 
-          loadingPalabra={loadingPalabra} 
+        <Canvas
+          dibujando={dibujando}
+          setDibujando={setDibujando}
+          puntos={puntos}
+          setPuntos={setPuntos}
+          socket={socket}
+          loadingPalabra={loadingPalabra}
           Rondas={Rondas}
           poderDibujar={poderDibujar}
         />
       </div>
       {Rondas < 1 ? <Modal /> : ""}
+      {!otroModal ? (
+        ""
+      ) : (
+        <OtroModal
+          palabraModal={palabraModal}
+          setOtroModal={setOtroModal}
+          palabraModalJugador={palabraModalJugador}
+          setPalabraModal={setPalabraModal}
+          setPalabraModalJugador={setPalabraModalJugador}
+        />
+      )}
+
+      {!gameFinish?"":<ModalGanador palabraAdiv={palabraAdiv} userWinner={userWinner} setGameFinish={setGameFinish}/>
+      }
       <Chat
-        user={user} 
-        setUser={setUser} 
-        msg={msg} 
-        setMsg={setMsg} 
-        mesagges={mesagges} 
-        setMesagges={setMesagges} 
-        socket={socket} 
-        palabraAdiv={palabraAdiv} 
-        setWinner={setWinner} 
-        setUserWinner={setUserWinner} 
-        setGameFinish={setGameFinish} 
-        gameFinish={gameFinish} 
-        winner={winner} 
+        user={user}
+        setUser={setUser}
+        msg={msg}
+        setMsg={setMsg}
+        mesagges={mesagges}
+        setMesagges={setMesagges}
+        socket={socket}
+        palabraAdiv={palabraAdiv}
+        setWinner={setWinner}
+        setUserWinner={setUserWinner}
+        setGameFinish={setGameFinish}
+        gameFinish={gameFinish}
+        winner={winner}
         userWinner={userWinner}
         setLoadingPalabra={setLoadingPalabra}
         setWord={setWord}
-        setRondas={setRondas}  
+        setRondas={setRondas}
       />
     </div>
   );

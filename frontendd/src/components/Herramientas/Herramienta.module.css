@@ -3,6 +3,8 @@
     align-items: center;
     justify-content: center;
     gap: 5px;
+    background-color: white;
+    padding: 5px;
   }
   
   .imgHerramienta {

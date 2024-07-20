@@ -1,7 +1,47 @@
 .controlsContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-  
+  display: flex;
+
+  align-items: center;
+  gap: 10px;
+}
+
+.palabraContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.getPalabrabtn {
+  cursor: pointer;
+  padding: 5px 15px;
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  border: 1px solid rgb(153, 255, 0);
+  background-color: rgb(45, 64, 25);
+  border-radius: 10px;
+}
+
+.palabra {
+  font-size: 24px;
+  font-weight: bold;
+  color: rgb(60, 212, 60);
+}
+
+.limpiarBtn {
+  padding: 8px;
+  line-height: 16px;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.rondas {
+  font-size: 30px;
+  color: rgb(0, 255, 0);
+}
+
+.span {
+  font-weight: 700;
+  color: red;
+}

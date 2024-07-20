@@ -1,72 +1,83 @@
 .chatContainer {
-    margin-top: 5px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   
-  .chatBox {
-    width: 960px;
-    height: 300px;
-    border: 1px solid gray;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-  }
-  
-  .sendContainer {
-    margin-top: 5px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  
-  .inputStyle {
-    width: 500px;
-    height: 30px;
-    font-size: 24px;
-  }
-  
-  .button {
-    padding: 6px 20px;
-    font-size: 19px;
-    color: white;
-    background-color: rgb(0, 135, 231);
-    border: 1px solid rgb(0, 115, 255);
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .button:hover {
-    background-color: rgba(0, 153, 255, 0.484);
-    border: 1px solid rgba(0, 115, 255, 0.375);
-  }
-  
-  .userName {
-    height: 30px;
-    width: 250px;
-    font-size: 18px;
-  }
-  
-  .chatBox {
-    display: flex;
-    flex-direction: column;
-    align-items: baseline;
-    gap: 5px;
-  }
-  
-  .textBox {
-    margin-top: 5px;
-    display: flex;
-    align-items: baseline;
-    justify-content: flex-start;
-    border: 1px solid black;
-    width: 400px;
-    padding: 10px 2px 10px 5px;
-    gap: 5px;
-  }
-  
-  .msgText {
-    margin: 0;
-  }
-  
+}
+
+.chatBox {
+  width: 960px;
+  height: 300px;
+  border: 1px solid gray;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background-color: rgba(46, 32, 56, 0.645);
+}
+
+.sendContainer {
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.inputStyle {
+  width: 500px;
+  height: 30px;
+  font-size: 24px;
+}
+
+.button {
+  padding: 6px 20px;
+  font-size: 19px;
+  color: white;
+  background-color: rgb(0, 135, 231);
+  border: 1px solid rgb(0, 115, 255);
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: rgba(0, 153, 255, 0.484);
+  border: 1px solid rgba(0, 115, 255, 0.375);
+}
+
+.userName {
+  height: 30px;
+  width: 250px;
+  font-size: 18px;
+}
+
+.chatBox {
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  gap: 5px;
+  padding: 5px;
+}
+
+.textBox {
+  margin-top: 5px;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  border: 1px solid white;
+  width: 400px;
+  padding: 10px 2px 10px 5px;
+  gap: 5px;
+  background-color: black;
+}
+
+.msgText {
+  margin: 0;
+  font-size: 16px;
+  color: white;
+}
+
+.userStyle {
+  font-size: 18px;
+  font-weight: 600;
+  color: rgb(0, 175, 0);
+}

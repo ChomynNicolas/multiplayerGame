@@ -4,6 +4,8 @@
     align-items: center;
     justify-content: center;
     gap: 2px;
+    background-color: white;
+    padding: 5px;
   }
   
   .colorDiv {

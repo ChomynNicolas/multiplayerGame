@@ -4,10 +4,12 @@ import styles from "./Controles.module.css";
 const Controles = ({ handleMove, word, Rondas, limpiarElLienzo }) => {
   return (
     <div className={styles.controlsContainer}>
-      <button onClick={handleMove}>Obtener palabra</button>
-      <div>{word}</div>
-      <button onClick={limpiarElLienzo}>Limpiar</button>
-      <div>Rondas: {Rondas}</div>
+      <button className={styles.limpiarBtn} onClick={limpiarElLienzo}>Limpiar</button>
+      <div className={styles.palabraContainer}>
+        <button className={styles.getPalabrabtn} onClick={handleMove}>Obtener palabra</button>
+        <div className={styles.palabra}>{word}</div>
+      </div>
+      <div className={styles.rondas}>Rondas: <span className={styles.span}>{Rondas}</span></div>
     </div>
   );
 };

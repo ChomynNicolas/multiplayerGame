@@ -1,9 +1,9 @@
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
-const randomWord = require("./assets/randomWords");
-const User = require('./models/user.model')
+const randomWord = require("./assets/randomWord.json");
 
+const User = require("./models/user.model");
 
 const app = express();
 const server = http.createServer(app);
@@ -14,37 +14,34 @@ const io = socketIo(server, {
   },
 });
 
-require('./config/mongoDb.config');
+require("./config/mongoDb.config");
+
+const connectedSockets = new Map();
 
 io.on("connection", (socket) => {
   console.log("New client connected");
-  
-  const createUser = async () => {
-    try {
-      await User.create({ socketId: socket.id });
-    } catch (error) {
-      console.error("Error creating user:", error);
-    }
-  };
 
-  createUser();
+  connectedSockets.set(socket.id, socket);
 
-  
-  socket.on("disconnect", async () => {
+  socket.on("disconnect", () => {
     console.log("Client disconnected");
 
-    try {
-      await User.findOneAndDelete({ socketId: socket.id });
-    } catch (error) {
-      console.error("Error deleting user:", error);
-    }
-  })
+    // Remove the disconnected socket ID
+    connectedSockets.delete(socket.id);
+  });
 
   socket.on("client:getword", () => {
-    const random = Math.floor(Math.random() * randomWord.length);
-    const wordFilter = randomWord.filter((data, ind) => ind === random);
-    socket.emit("server:getword", wordFilter);
-    io.emit('server:palabrasecreta', wordFilter)
+    const randomWordArray = randomWord.objetos;
+    const randomIndex = Math.floor(Math.random() * randomWordArray.length);
+    const word = randomWordArray[randomIndex];
+    const socketIds = Array.from(connectedSockets.keys());
+    const randomSocketId =
+      socketIds[Math.floor(Math.random() * socketIds.length)];
+    const randomSocket = connectedSockets.get(randomSocketId);
+    if (randomSocket) {
+      randomSocket.emit("server:getword", word);
+    }
+    io.emit("server:palabrasecreta", word);
   });
 
   socket.on("client:dibujando", (data) => {
@@ -62,36 +59,28 @@ io.on("connection", (socket) => {
   socket.on("client:options", (option) => {
     let height;
     let color;
-    
+
     switch (option) {
-      case "lapiz": {
-        
+      case "lapiz":
         height = 5;
         break;
-      }
-      case "marcador": {
+      case "marcador":
         height = 10;
         break;
-      }
-      case "borrador": {
+      case "borrador":
         height = 50;
-        color = "white"
+        color = "white";
         break;
-      }
     }
-    io.emit("server:option",({height,color}));
+    io.emit("server:option", { height, color });
   });
 
-  socket.on('client:sendMsg',(data)=>{
+  socket.on("client:sendMsg", (data) => {
     let msg = data.msg.toLowerCase();
     let user = data.user;
-
     let palabraAdiv = data.palabraAdiv[0]?.toLowerCase();
-
-    io.emit('server:sendMsg',({msg,user,palabraAdiv}))
-  })
-
-
+    io.emit("server:sendMsg", { msg, user, palabraAdiv });
+  });
 });
 
 const PORT = process.env.PORT || 4000;
