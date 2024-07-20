@@ -1,0 +1,18 @@
+.herramientContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+  
+  .imgHerramienta {
+    width: 40px;
+    height: 40px;
+    border: 1px solid black;
+    cursor: pointer;
+  }
+  
+  .imgHerramienta:hover {
+    background-color: rgba(0, 0, 0, 0.103);
+  }
+  

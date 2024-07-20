@@ -1,0 +1,18 @@
+.colorContainer {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+  }
+  
+  .colorDiv {
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+  }
+  
+  .colorDiv:hover {
+    opacity: 0.7;
+  }
+  
