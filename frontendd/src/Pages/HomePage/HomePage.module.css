@@ -1,0 +1,62 @@
+.container {
+  width: 600px;
+  margin: 0 auto;
+  margin-top: 200px;
+  padding: 10px;
+  border: 1px solid greenyellow;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.title {
+  font-size: 60px;
+  font-weight: bolder;
+  color: rgb(37, 179, 37);
+}
+
+.createContainer,
+.joinContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.label {
+  font-size: 24px;
+  font-weight: 600;
+  color: whitesmoke;
+}
+
+.Input{
+  padding: 3px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.btnContainer{
+  display: flex;
+  align-items: center;
+}
+
+
+.button{
+  padding: 4px 10px;
+  color: white;
+  background-color: rgba(3, 195, 0, 0.519);
+  font-size: 18px;
+  border: 1px solid rgb(43, 255, 43);
+  cursor: pointer;
+}
+
+.button:hover{
+  opacity: 0.6;
+
+}
+
+.error{
+  color: rgb(255, 44, 44);
+  font-size: 18px;
+  font-weight: 700;
+}

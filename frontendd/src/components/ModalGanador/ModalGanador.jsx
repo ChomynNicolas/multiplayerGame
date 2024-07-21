@@ -1,9 +1,14 @@
 import React from 'react'
 import './ModalGanador.css'
 
+
+
+
 const ModalGanador = ({palabraAdiv,userWinner,setGameFinish}) => {
+  
   const handleClose = () => {
     setGameFinish(false)
+    
   }
 
 

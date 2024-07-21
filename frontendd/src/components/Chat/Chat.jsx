@@ -1,28 +1,55 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import styles from "./Chat.module.css";
 
-const Chat = ({ user, setUser, msg, setMsg, mesagges, setMesagges, socket, palabraAdiv, setWinner, setUserWinner, setGameFinish, gameFinish, winner, userWinner,setLoadingPalabra,setWord,setRondas }) => {
+const Chat = ({
+  user,
+  setUser,
+  msg,
+  setMsg,
+  mesagges,
+  setMesagges,
+  socket,
+  palabraAdiv,
+  setWinner,
+  setUserWinner,
+  setGameFinish,
+  gameFinish,
+  winner,
+  userWinner,
+  setLoadingPalabra,
+  setWord,
+  setRondas,
+  usuarioColor,
+}) => {
   const messagesEndRef = useRef(null);
+  
 
   useEffect(() => {
-    socket.on('server:sendMsg', ({ user, msg, palabraAdiv }) => {
-      setMesagges((prevMensajes) => [...prevMensajes, { user, msg }]);
-      if (msg.includes(palabraAdiv)) {
+    socket.on("server:sendMsg", ({ user, msg, palabraAdiv,usuarioColor2 }) => {
+      
+      
+      
+      setMesagges((prevMensajes) => [...prevMensajes, { user, msg,usuarioColor2 }]);
+
+      if (!palabraAdiv) {
+        return;
+      }
+      const palabraRegex = new RegExp(`\\b${palabraAdiv}\\b`, "i");
+      if (palabraRegex.test(msg)) {
         setWinner(msg);
         setUserWinner(user);
         setGameFinish(true);
-        setLoadingPalabra(false)
-        setWord("")
-        setRondas((prevRondas) =>{
-          const updatedRounds = prevRondas-=1;
-          return updatedRounds;
-        });
+        setLoadingPalabra(false);
+        setWord("");
+
+        setRondas((prevRondas) => prevRondas - 1);
       }
-      
     });
 
+    
+
     return () => {
-      socket.off('server:sendMsg');
+      socket.off("server:sendMsg");
     };
   }, [socket]);
 
@@ -32,18 +59,36 @@ const Chat = ({ user, setUser, msg, setMsg, mesagges, setMesagges, socket, palab
 
   const handleEnviarMensaje = () => {
     if (msg.length > 0) {
-      socket.emit('client:sendMsg', ({ msg, user, palabraAdiv }));
+      setMsg("");
+      
+      socket.emit("client:sendMsg", { msg, user, palabraAdiv,usuarioColor });
     }
-  }
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      
+      event.preventDefault();
+      handleEnviarMensaje()
+      
+      
+      
+    }
+  };
 
   
-
+  
   return (
     <div className={styles.chatContainer}>
       <div className={styles.chatBox}>
         {mesagges.map((msg, ind) => (
-          <div className={styles.textBox} key={ind}>
-            <label className={styles.userStyle}>{msg.user}: </label>
+          <div  className={`${styles.textBox} ${msg.user === user ? styles.clientMsg : ''}`} key={ind}>
+            <label
+              style={{ color:  `${msg.usuarioColor2}`  }}
+              className={styles.userStyle}
+            >
+              {msg.user}:{" "}
+            </label>
             <div className={styles.msgContainer}>
               <p className={styles.msgText}>{msg.msg}</p>
             </div>
@@ -53,17 +98,15 @@ const Chat = ({ user, setUser, msg, setMsg, mesagges, setMesagges, socket, palab
       </div>
       <div className={styles.sendContainer}>
         <input
-          onChange={(e) => setUser(e.target.value)}
-          type="text"
-          placeholder="Ingresar nombre del usuario"
-          className={styles.userName}
-        />
-        <input
+          value={msg}
           onChange={(e) => setMsg(e.target.value)}
           type="text"
           className={styles.inputStyle}
+          onKeyDown={handleKeyDown}
         />
-        <button onClick={handleEnviarMensaje} className={styles.button}>Enviar</button>
+        <button onClick={handleEnviarMensaje} className={styles.button}>
+          Enviar
+        </button>
       </div>
     </div>
   );

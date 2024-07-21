@@ -1,9 +1,9 @@
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
+const { v4: uuidv4 } = require("uuid");
 const randomWord = require("./assets/randomWord.json");
-
-
+const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
@@ -14,19 +14,100 @@ const io = socketIo(server, {
   },
 });
 
+const rooms = {};
+let users = {};
 
+const predefinedColors = [
+  "#FF5733",
+  "#33FF57",
+  "#3357FF",
+  "#F0F333",
+  "#F333F0",
+  "#33F0F0",
+  "#F0A333",
+  "#33F0A3",
+  "#A333F0",
+  "#F0A3A3",
+  "#00FF00",
+  "#1E90FF",
+  "#FFD700",
+  "#FF1493",
+  "#00FFFF",
+  "#FF4500",
+  "#DA70D6",
+  "#FF6347",
+  "#4682B4",
+  "#D2691E",
+  "#ADFF2F",
+  "#FF00FF",
+  "#7FFF00",
+  "#FFB6C1",
+  "#6495ED",
+  "#FF00FF",
+  "#32CD32",
+  "#40E0D0",
+  "#FF1493",
+];
+
+app.use(express.json(), cors());
+
+function generateRoomId() {
+  return uuidv4().replace(/-/g, "").slice(0, 5);
+}
+
+app.post("/create-room", (req, res) => {
+  const { maxPlayers } = req.body;
+  const maxPlayerFin = maxPlayers * 2;
+  const roomId = generateRoomId();
+  rooms[roomId] = { players: [], maxPlayerFin };
+  res.json({ roomId });
+});
 
 const connectedSockets = new Map();
 
 io.on("connection", (socket) => {
   console.log("New client connected");
 
+  const getRandomColor = () => {
+    return predefinedColors[
+      Math.floor(Math.random() * predefinedColors.length)
+    ];
+  };
+
+  socket.on("join-room", ({ roomId, playerName }) => {
+    const room = rooms[roomId];
+    console.log(room);
+    if (room) {
+      if (room.players.length < room.maxPlayerFin) {
+        room.players.push(playerName);
+        socket.join(roomId);
+        io.to(roomId).emit("player-joined", room.players);
+        const color = getRandomColor();
+        users[socket.id] = color;
+
+        socket.emit("setColor", color);
+      } else {
+        socket.emit("room-full");
+      }
+    } else {
+      socket.emit("room-not-found");
+    }
+  });
+
   connectedSockets.set(socket.id, socket);
 
   socket.on("disconnect", () => {
     console.log("Client disconnected");
 
-    // Remove the disconnected socket ID
+    for (const roomId in rooms) {
+      const room = rooms[roomId];
+      const playerIndex = room.players.indexOf(socket.id);
+      if (playerIndex !== -1) {
+        room.players.splice(playerIndex, 1);
+        io.to(roomId).emit("player-left", room.players);
+      }
+    }
+
     connectedSockets.delete(socket.id);
   });
 
@@ -76,10 +157,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("client:sendMsg", (data) => {
-    let msg = data.msg.toLowerCase();
+    let msg = data.msg;
     let user = data.user;
-    let palabraAdiv = data.palabraAdiv[0]?.toLowerCase();
-    io.emit("server:sendMsg", { msg, user, palabraAdiv });
+    let palabraAdiv = data.palabraAdiv;
+    let usuarioColor2 = data.usuarioColor
+    
+    io.emit("server:sendMsg", { msg, user, palabraAdiv,usuarioColor2 });
   });
 });
 

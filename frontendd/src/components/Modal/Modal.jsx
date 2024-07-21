@@ -1,9 +1,12 @@
 import React from 'react'
 import './modal.css'
+import { useNavigate } from 'react-router-dom'
 
 const Modal = () => {
+
+  const navigate = useNavigate()
   const handleReload = () => {
-    window.location.reload();
+    navigate('/')
   }
 
   return (
