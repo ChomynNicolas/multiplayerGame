@@ -57,7 +57,7 @@ function generateRoomId() {
 
 app.post("/create-room", (req, res) => {
   const { maxPlayers } = req.body;
-  const maxPlayerFin = maxPlayers * 2;
+  const maxPlayerFin = maxPlayers;
   const roomId = generateRoomId();
   rooms[roomId] = { players: [], maxPlayerFin };
   res.json({ roomId });
