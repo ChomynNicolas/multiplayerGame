@@ -76,7 +76,7 @@ io.on("connection", (socket) => {
 
   socket.on("join-room", ({ roomId, playerName }) => {
     const room = rooms[roomId];
-    console.log(room);
+    
     if (room) {
       if (room.players.length < room.maxPlayerFin) {
         room.players.push(playerName);
