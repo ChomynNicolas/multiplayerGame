@@ -15,7 +15,7 @@ const io = socketIo(server, {
 });
 
 const rooms = {};
-let users = {};
+const users = {};
 
 const predefinedColors = [
   "#FF5733",
@@ -76,15 +76,14 @@ io.on("connection", (socket) => {
 
   socket.on("join-room", ({ roomId, playerName }) => {
     const room = rooms[roomId];
-    
+
     if (room) {
       if (room.players.length < room.maxPlayerFin) {
-        room.players.push(playerName);
+        room.players.push({ id: socket.id, name: playerName });
         socket.join(roomId);
         io.to(roomId).emit("player-joined", room.players);
         const color = getRandomColor();
-        users[socket.id] = color;
-
+        users[socket.id] = { color, roomId, playerName };
         socket.emit("setColor", color);
       } else {
         socket.emit("room-full");
@@ -98,71 +97,98 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log("Client disconnected");
-
-    for (const roomId in rooms) {
-      const room = rooms[roomId];
-      const playerIndex = room.players.indexOf(socket.id);
-      if (playerIndex !== -1) {
-        room.players.splice(playerIndex, 1);
-        io.to(roomId).emit("player-left", room.players);
+    const user = users[socket.id];
+    if (user) {
+      const room = rooms[user.roomId];
+      if (room) {
+        room.players = room.players.filter((player) => player.id !== socket.id);
+        if (room.players.length === 0) {
+          delete rooms[user.roomId];
+        } else {
+          io.to(user.roomId).emit("player-left", room.players);
+        }
       }
+      delete users[socket.id];
     }
-
     connectedSockets.delete(socket.id);
   });
 
   socket.on("client:getword", () => {
-    const randomWordArray = randomWord.objetos;
-    const randomIndex = Math.floor(Math.random() * randomWordArray.length);
-    const word = randomWordArray[randomIndex];
-    const socketIds = Array.from(connectedSockets.keys());
-    const randomSocketId =
-      socketIds[Math.floor(Math.random() * socketIds.length)];
-    const randomSocket = connectedSockets.get(randomSocketId);
+    const user = users[socket.id];
+    
+    if (user) {
+      const randomWordArray = randomWord.objetos;
+      const randomIndex = Math.floor(Math.random() * randomWordArray.length);
+      const word = randomWordArray[randomIndex];
+      const socketIds = Array.from(connectedSockets.keys());
+      const randomSocketId =  socketIds[Math.floor(Math.random() * socketIds.length)];
+      const randomSocket = connectedSockets.get(randomSocketId);
     if (randomSocket) {
       randomSocket.emit("server:getword", word);
     }
-    io.emit("server:palabrasecreta", word);
+      const roomId = user.roomId;
+      io.to(roomId).emit("server:palabrasecreta", word);
+    }
   });
 
   socket.on("client:dibujando", (data) => {
-    io.emit("server:dibujando", data);
+    const user = users[socket.id];
+    if (user) {
+      io.to(user.roomId).emit("server:dibujando", data);
+    }
   });
 
   socket.on("client:limpiar", () => {
-    io.emit("server:limpiar", true);
+    const user = users[socket.id];
+    if (user) {
+      io.to(user.roomId).emit("server:limpiar", true);
+    }
   });
 
   socket.on("client:color", (color) => {
-    io.emit("server:color", color);
+    const user = users[socket.id];
+    if (user) {
+      io.to(user.roomId).emit("server:color", color);
+    }
   });
 
   socket.on("client:options", (option) => {
-    let height;
-    let color;
+    const user = users[socket.id];
+    if (user) {
+      let height;
+      let color;
 
-    switch (option) {
-      case "lapiz":
-        height = 5;
-        break;
-      case "marcador":
-        height = 10;
-        break;
-      case "borrador":
-        height = 50;
-        color = "white";
-        break;
+      switch (option) {
+        case "lapiz":
+          height = 5;
+          break;
+        case "marcador":
+          height = 10;
+          break;
+        case "borrador":
+          height = 50;
+          color = "white";
+          break;
+      }
+      io.to(user.roomId).emit("server:option", { height, color });
     }
-    io.emit("server:option", { height, color });
   });
 
   socket.on("client:sendMsg", (data) => {
-    let msg = data.msg;
-    let user = data.user;
-    let palabraAdiv = data.palabraAdiv;
-    let usuarioColor2 = data.usuarioColor
-    
-    io.emit("server:sendMsg", { msg, user, palabraAdiv,usuarioColor2 });
+    const usuario = users[socket.id];
+    if (usuario) {
+      const msg = data.msg;
+      const user = usuario.playerName;
+      const palabraAdiv = data.palabraAdiv;
+      const usuarioColor2 = usuario.color;
+
+      io.to(usuario.roomId).emit("server:sendMsg", {
+        user,
+        msg,
+        palabraAdiv,
+        usuarioColor2,
+      });
+    }
   });
 });
 

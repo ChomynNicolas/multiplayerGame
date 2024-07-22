@@ -11,7 +11,7 @@ import OtroModal from "../../components/OtroModal/OtroModal";
 import ModalGanador from "../../components/ModalGanador/ModalGanador";
 import { useNavigate, useParams } from "react-router-dom";
 
-const socket = io("https://gameserver-p0ye.onrender.com/");
+const socket = io("http://localhost:4000/");
 
 function Room() {
   const [word, setWord] = useState("");
@@ -32,7 +32,7 @@ function Room() {
   const [palabraModal, setPalabraModal] = useState("");
   const [palabraModalJugador, setPalabraModalJugador] = useState("");
   const [players, setPlayers] = useState([]);
-  const [playerName, setPlayerName] = useState("anonimo");
+  const [playerName, setPlayerName] = useState(localStorage.getItem("user"));
   const [salaLlena, setSalaLlena] = useState(false);
   const [usuarioColor, setUsuarioColor] = useState("")
   const { roomId } = useParams();
