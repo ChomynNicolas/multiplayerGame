@@ -14,6 +14,11 @@ const OtroModal = ({
     setPalabraModalJugador("");
   };
 
+  setTimeout(()=>{
+    setOtroModal(false)
+
+  },2000)
+
   return (
     <div className="modal-overlay">
       <div className="card">

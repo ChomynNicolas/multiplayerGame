@@ -79,10 +79,10 @@ io.on("connection", (socket) => {
 
     if (room) {
       if (room.players.length < room.maxPlayerFin) {
-        room.players.push({ id: socket.id, name: playerName });
+        const color = getRandomColor();
+        room.players.push({ id: socket.id, name: playerName, color: color, points: 0 });
         socket.join(roomId);
         io.to(roomId).emit("player-joined", room.players);
-        const color = getRandomColor();
         users[socket.id] = { color, roomId, playerName };
         socket.emit("setColor", color);
       } else {
@@ -115,17 +115,26 @@ io.on("connection", (socket) => {
 
   socket.on("client:getword", () => {
     const user = users[socket.id];
-    
+
     if (user) {
       const randomWordArray = randomWord.objetos;
       const randomIndex = Math.floor(Math.random() * randomWordArray.length);
       const word = randomWordArray[randomIndex];
-      const socketIds = Array.from(connectedSockets.keys());
-      const randomSocketId =  socketIds[Math.floor(Math.random() * socketIds.length)];
+
+      const usersInSameRoom = Object.keys(users).filter(
+        (key) => users[key].roomId === user.roomId
+      );
+
+      const randomNun = Math.floor(Math.random() * usersInSameRoom.length);
+
+      const randomSocketId = usersInSameRoom[randomNun];
+
       const randomSocket = connectedSockets.get(randomSocketId);
-    if (randomSocket) {
-      randomSocket.emit("server:getword", word);
-    }
+
+      if (randomSocket) {
+        randomSocket.emit("server:getword", word);
+      }
+
       const roomId = user.roomId;
       io.to(roomId).emit("server:palabrasecreta", word);
     }

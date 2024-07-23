@@ -1,0 +1,42 @@
+.usuariosConectados {
+  width: 300px;
+  height: 400px;
+  border: 1px solid red;
+}
+
+.titulos{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px;
+
+}
+
+.user{
+  font-size: 36px;
+  color: white;
+
+}
+
+.points{
+  font-size: 36px;
+  color: white;
+}
+
+.userContainer{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px;
+}
+
+.name{
+  font-size: 24px;
+
+}
+
+.puntos{
+  font-size: 24px;
+  color: white;
+}
+

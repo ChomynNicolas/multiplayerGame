@@ -10,6 +10,8 @@ import Chat from "../../components/Chat/Chat";
 import OtroModal from "../../components/OtroModal/OtroModal";
 import ModalGanador from "../../components/ModalGanador/ModalGanador";
 import { useNavigate, useParams } from "react-router-dom";
+import Puntajes from "../../components/Puntajes/Puntajes";
+import Avisos from "../../components/Avisos/Avisos";
 
 const socket = io("https://gameserver-p0ye.onrender.com/");
 
@@ -59,6 +61,7 @@ function Room() {
     socket.emit("join-room", { roomId, playerName });
 
     socket.on("player-joined", (players) => {
+      
       setPlayers(players);
     });
 
@@ -120,6 +123,13 @@ function Room() {
     </div>;
   }
 
+  if ((gameFinish)&&(!loadingPalabra && Rondas > 0)) {
+    setTimeout(() => {
+      socket.emit("client:getword");
+    }, 2000);
+    socket.emit("client:limpiar");
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.elementsContainer}>
@@ -134,6 +144,8 @@ function Room() {
         />
       </div>
       <div className={styles.canvaAndButtonContainer}>
+
+        <Puntajes players={players}/>
         <Canvas
           dibujando={dibujando}
           setDibujando={setDibujando}
@@ -144,6 +156,7 @@ function Room() {
           Rondas={Rondas}
           poderDibujar={poderDibujar}
         />
+        <Avisos winner={winner} userWinner={userWinner}  />
       </div>
       {Rondas < 1 ? <Modal /> : ""}
       {!otroModal ? (
@@ -157,15 +170,7 @@ function Room() {
           setPalabraModalJugador={setPalabraModalJugador}
         />
       )}
-      {!gameFinish ? (
-        ""
-      ) : (
-        <ModalGanador
-          palabraAdiv={palabraAdiv}
-          userWinner={userWinner}
-          setGameFinish={setGameFinish}
-        />
-      )}
+    
       <Chat
         user={user}
         setUser={setUser}
