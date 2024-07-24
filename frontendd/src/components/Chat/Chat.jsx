@@ -41,8 +41,13 @@ const Chat = ({
         setGameFinish(true);
         setLoadingPalabra(false);
         setWord("");
-
         setRondas((prevRondas) => prevRondas - 1);
+
+        socket.emit('client:generando-puntos',(user))
+
+        
+
+
       }
     });
 

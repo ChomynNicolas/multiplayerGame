@@ -1,11 +1,48 @@
 
+import { useEffect, useState } from 'react'
 import styles from './Puntajes.module.css'
 
 
 
-const Puntajes = ({players}) => {
 
-  console.log(players)
+const Puntajes = ({players,socket,setPlayers}) => {
+
+  const [sumUser, setSumUser] = useState("");
+
+
+
+  useEffect(() => {
+    socket.on('server:generando-puntos',(user)=>{
+
+      setSumUser(user)
+    })
+  
+    
+  }, [])
+
+  console.log(sumUser);
+
+  useEffect(() => {
+    
+    const newPlayer = players.map(player=>{
+      if(player.name === sumUser){
+        player.points+=10;
+      }
+      return player
+    })
+    setSumUser('')
+    console.log(newPlayer)
+  }, [sumUser])
+  
+
+
+  
+  
+
+
+
+
+  
   return (
     <div className={styles.usuariosConectados}>
       <div className={styles.titulos}>
@@ -16,7 +53,7 @@ const Puntajes = ({players}) => {
       <div>
         {
           players.map(player=> (
-            <div className={styles.userContainer}>
+            <div className={styles.userContainer} key={player.color}>
               <span style={{color: `${player.color}` }  } className={styles.name}>{player.name}</span>
               <span className={styles.puntos}>{player.points}</span>
 

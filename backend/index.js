@@ -16,6 +16,7 @@ const io = socketIo(server, {
 
 const rooms = {};
 const users = {};
+let antNum;
 
 const predefinedColors = [
   "#FF5733",
@@ -80,7 +81,12 @@ io.on("connection", (socket) => {
     if (room) {
       if (room.players.length < room.maxPlayerFin) {
         const color = getRandomColor();
-        room.players.push({ id: socket.id, name: playerName, color: color, points: 0 });
+        room.players.push({
+          id: socket.id,
+          name: playerName,
+          color: color,
+          points: 0,
+        });
         socket.join(roomId);
         io.to(roomId).emit("player-joined", room.players);
         users[socket.id] = { color, roomId, playerName };
@@ -125,7 +131,12 @@ io.on("connection", (socket) => {
         (key) => users[key].roomId === user.roomId
       );
 
-      const randomNun = Math.floor(Math.random() * usersInSameRoom.length);
+      let randomNun = Math.floor(Math.random() * usersInSameRoom.length);
+      if (randomNun === antNum) {
+        randomNun = Math.floor(Math.random() * usersInSameRoom.length);
+      }
+
+      antNum = randomNun;
 
       const randomSocketId = usersInSameRoom[randomNun];
 
@@ -199,6 +210,22 @@ io.on("connection", (socket) => {
       });
     }
   });
+
+
+  socket.on('client:generando-puntos',(user)=>{
+
+    io.emit('server:generando-puntos',(user))
+
+  })
+
+
+
+
+
+
+
+
+
 });
 
 const PORT = process.env.PORT || 4000;

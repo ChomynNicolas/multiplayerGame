@@ -9,7 +9,7 @@ const Avisos = ({winner,userWinner}) => {
   useEffect(() => {
     if(winner.length>0){
 
-      setMensajes(prevMensajes =>[...mensajes,{winner,userWinner}])
+      setMensajes((prevMensajes) =>[...prevMensajes,{winner,userWinner}])
     }
     
     
@@ -24,7 +24,7 @@ const Avisos = ({winner,userWinner}) => {
 
   
 
-  console.log(mensajes)
+  
 
   return (
     <div className={styles.usuariosConectados}>
@@ -32,7 +32,7 @@ const Avisos = ({winner,userWinner}) => {
       <div className={styles.msgContainer}>
         {
           mensajes.map((msg)=> (
-            <div className={styles.msg}>
+            <div className={styles.msg} key={msg.winner}>
               <h3 className={styles.ganador}> Ganador: <span className={styles.usuarioTexto}>{msg.userWinner}</span></h3>
               <p className={styles.texto}>{msg.winner}</p>
 

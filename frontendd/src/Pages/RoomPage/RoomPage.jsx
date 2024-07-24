@@ -97,6 +97,8 @@ function Room() {
 
   const handleMove = () => {
     if (!loadingPalabra && Rondas > 0) {
+      setPalabraModal('');
+      setPalabraModalJugador('');
       socket.emit("client:getword");
       socket.emit("client:limpiar");
     }
@@ -123,12 +125,7 @@ function Room() {
     </div>;
   }
 
-  if ((gameFinish)&&(!loadingPalabra && Rondas > 0)) {
-    setTimeout(() => {
-      socket.emit("client:getword");
-    }, 2000);
-    socket.emit("client:limpiar");
-  }
+  
 
   return (
     <div className={styles.container}>
@@ -145,7 +142,7 @@ function Room() {
       </div>
       <div className={styles.canvaAndButtonContainer}>
 
-        <Puntajes players={players}/>
+        <Puntajes players={players} socket={socket} setPlayers={setPlayers}/>
         <Canvas
           dibujando={dibujando}
           setDibujando={setDibujando}
