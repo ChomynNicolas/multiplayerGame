@@ -20,7 +20,7 @@ const Puntajes = ({players,socket,setPlayers}) => {
     
   }, [])
 
-  console.log(sumUser);
+  
 
   useEffect(() => {
     
@@ -31,7 +31,7 @@ const Puntajes = ({players,socket,setPlayers}) => {
       return player
     })
     setSumUser('')
-    console.log(newPlayer)
+    
   }, [sumUser])
   
 
