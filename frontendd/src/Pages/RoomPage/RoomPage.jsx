@@ -13,7 +13,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Puntajes from "../../components/Puntajes/Puntajes";
 import Avisos from "../../components/Avisos/Avisos";
 
-const socket = io("https://gameserver-p0ye.onrender.com/");
+const socket = io("http://localhost:4000/");
 
 function Room() {
   const [word, setWord] = useState("");
@@ -44,6 +44,7 @@ function Room() {
       setWord(palabra);
       setPoderDibujar(true);
       setOtroModal(true);
+      setGameFinish(false)
       setPalabraModalJugador(
         "Tienes la palabra, haz tu mejor intento de dibujo"
       );
@@ -52,6 +53,7 @@ function Room() {
     socket.on("server:palabrasecreta", (palabra) => {
       setPalabraAdiv(palabra);
       setLoadingPalabra(true);
+      setGameFinish(false)
       setOtroModal(true);
       setPalabraModal(
         "Alguien tiene la palabra, intenta adivinar con el dibujo"
@@ -63,8 +65,11 @@ function Room() {
     socket.on("player-joined", (players) => {
       
       setPlayers(players);
+      
     });
+    
 
+    
     socket.on("room-full", () => {
       setSalaLlena(true);
     });
@@ -85,7 +90,7 @@ function Room() {
   }, [roomId, playerName]);
 
   
-
+  
   const handleSelectColor = (e) => {
     if (!poderDibujar) {
       return;
@@ -187,6 +192,9 @@ function Room() {
         setWord={setWord}
         setRondas={setRondas}
         usuarioColor={usuarioColor}
+        loadingPalabra={loadingPalabra}
+        setPalabraAdiv={setPalabraAdiv}
+        players={players}
       />
     </div>
   );

@@ -201,20 +201,34 @@ io.on("connection", (socket) => {
       const user = usuario.playerName;
       const palabraAdiv = data.palabraAdiv;
       const usuarioColor2 = usuario.color;
+      const players = data.players
 
       io.to(usuario.roomId).emit("server:sendMsg", {
         user,
         msg,
         palabraAdiv,
         usuarioColor2,
+        players
       });
     }
   });
 
 
-  socket.on('client:generando-puntos',(user)=>{
+  socket.on('client:generando-puntos',({players,puntos,user})=>{
 
-    io.emit('server:generando-puntos',(user))
+    
+
+    
+
+    const newPlayer = players.map((player) => {
+      if (player.name === user) {
+        player.points += puntos;
+      }
+      return player;
+    });
+
+
+    io.emit('server:generando-puntos',({players:newPlayer,user,puntos}))
 
   })
 
