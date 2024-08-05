@@ -12,7 +12,7 @@ const HomePage = () => {
 
   const createRoom = async () => {
     if (user.length > 1) {
-      const response = await axios.post("http://localhost:4000/create-room", {
+      const response = await axios.post("https://gameserver-p0ye.onrender.com/create-room", {
         maxPlayers,
       });
       navigate(`/room/${response.data.roomId}`);

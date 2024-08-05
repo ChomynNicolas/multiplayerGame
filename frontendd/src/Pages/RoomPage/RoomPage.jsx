@@ -13,7 +13,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Puntajes from "../../components/Puntajes/Puntajes";
 import Avisos from "../../components/Avisos/Avisos";
 
-const socket = io("http://localhost:4000/");
+const socket = io("https://gameserver-p0ye.onrender.com");
 
 function Room() {
   const [word, setWord] = useState("");
